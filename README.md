@@ -22,6 +22,8 @@ finally:
 ```
 Reading node
 ```python
+from opcua import Client, ua
+
 client = Client("opc.tcp://localhost:4840")
 try:
     client.connect()
@@ -64,11 +66,63 @@ while True:
     sleep(1)
 ```
 ### Web App
+```python
+@app.route('/')
+def hello_world():
+    return 'Hello, World!'
+```
 ### ES Indexer
+Index data to ES
+```python
+from datetime import datetime
+from elasticsearch import Elasticsearch
+msg = {
+    "workingcode": "yaypython!",
+    "string": "abcABC",
+    "whole": 123,
+    "float": 654.321,
+    "timestamp": datetime.now(),
+}
+es = Elasticsearch()
+es.indices.create(index='python-helloworld', ignore=400)
+es.index(index="python-helloworld",
+         doc_type="test-jsontype",
+         id=42,
+         body=msg)
+```
+getting data
+```python
+es.get(index="python-helloworld", doc_type="test-jsontype", id=42)
+```
+Using bulk action
+```python
+import json
+from time import sleep
+from datetime import datetime
+
+from elasticsearch import Elasticsearch
+from elasticsearch import helpers
+
+es = Elasticsearch()
+
+dict_data = {}
+while True:
+	# update dict_data
+    actions = [
+        {
+            "_index": "python_data",
+            "_type": "data",
+            "_source": dict_data
+        }]
+    helpers.bulk(es, actions)
+```
 ## Web Contributor
 ### MQTT Subscriber
 
 
 ## Future
  * IOT homepage: app status
+
+
+
 
